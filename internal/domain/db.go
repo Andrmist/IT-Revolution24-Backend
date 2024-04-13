@@ -16,7 +16,7 @@ type User struct {
 	Role         string         `json:"-"`
 	AuthCode     int            `json:"-"`
 	IsRegistered bool           `gorm:"default:0" json:"isRegistered"`
-	Fishes       []Fish         `json:"-"`
+	Fishes       []Pet          `json:"-"`
 }
 
 type Pet struct {
