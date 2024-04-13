@@ -7,7 +7,6 @@ import (
 	"math/rand"
 
 	"github.com/robfig/cron"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -19,8 +18,8 @@ const (
 	MIN_SATIETY    = 0
 	HUNGRY_SATIETY = 20
 
-	HUNGER_TIMEOUT = "@every 1s"
-	LOVE_TIMEOUT   = "@every 1s"
+	HUNGER_TIMEOUT = "@every 10s"
+	LOVE_TIMEOUT   = "@every 10s"
 	SEX_TIMEOUT    = "@every 5s"
 
 	SEX_MALE   = "male"
@@ -63,7 +62,6 @@ func (j *Job) petJobs() {
 		}
 
 		for _, pet := range pets {
-			logrus.Info(pet)
 			if pet.Satiety <= 0 {
 				if err := j.db.Where("id = ?", pet.ID).Delete(&domain.Pet{}).Commit().Error; err != nil {
 					return
