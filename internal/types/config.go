@@ -22,10 +22,10 @@ type Config struct {
 }
 
 type ServerContext struct {
-	Config               Config
-	Log                  *logrus.Logger
-	DB                   *gorm.DB
-	WebSocketConnections map[uint][]string
+	Config  Config
+	Log     *logrus.Logger
+	DB      *gorm.DB
+	WsConns map[uint][]chan []byte
 }
 
 func InitConfig() (Config, error) {

@@ -1,6 +1,8 @@
 package job
 
 import (
+	"encoding/json"
+	"github.com/pkg/errors"
 	"itrevolution-backend/internal/domain"
 	"math/rand"
 
@@ -14,7 +16,8 @@ const (
 	MAX_LOVE_METER = 20
 	MIN_LOVE_METER = 0
 
-	MIN_SATIETY = 0
+	MIN_SATIETY    = 0
+	HUNGRY_SATIETY = 20
 
 	HUNGER_TIMEOUT = "@every 1s"
 	LOVE_TIMEOUT   = "@every 1s"
@@ -25,14 +28,22 @@ const (
 )
 
 type Job struct {
-	c  *cron.Cron
-	db *gorm.DB
+	c       *cron.Cron
+	db      *gorm.DB
+	wsConns map[uint][]chan []byte
 }
 
-func NewJob(c *cron.Cron, db *gorm.DB) *Job {
+type webSocketLoveData struct {
+	Male   domain.Pet `json:"male"`
+	Female domain.Pet `json:"female"`
+	Child  domain.Pet `json:"child"`
+}
+
+func NewJob(c *cron.Cron, db *gorm.DB, wsConns map[uint][]chan []byte) *Job {
 	return &Job{
-		c:  c,
-		db: db,
+		c:       c,
+		db:      db,
+		wsConns: wsConns,
 	}
 }
 
@@ -57,6 +68,31 @@ func (j *Job) petJobs() {
 				if err := j.db.Where("id = ?", pet.ID).Delete(&domain.Pet{}).Commit().Error; err != nil {
 					return
 				}
+
+				var child domain.User
+				if err := j.db.First(&child, "id = ?", pet.UserID).Error; err != nil {
+					return
+				}
+				var parent domain.User
+				if err := j.db.First(&parent, "email = ?", child.Email).Error; err != nil {
+					return
+				}
+
+				j.broadcastStructToUserById(child.ID, domain.WebSocketMessage{
+					Event: "pet.death",
+					Data:  pet,
+				})
+				j.broadcastStructToUserById(parent.ID, domain.WebSocketMessage{
+					Event: "pet.death",
+					Data:  pet,
+				})
+			}
+
+			if pet.Satiety <= HUNGRY_SATIETY {
+				j.broadcastStructToUserById(pet.UserID, domain.WebSocketMessage{
+					Event: "pet.hungry",
+					Data:  pet,
+				})
 			}
 
 			pet.Satiety = pet.Satiety - 5
@@ -91,39 +127,67 @@ func (j *Job) petJobs() {
 
 	// sex func
 	j.c.AddFunc(SEX_TIMEOUT, func() {
-		var petMale, petFemale domain.Pet
 
-		if err := j.db.Where("sex = ? and love_meter = ?", SEX_MALE, MAX_LOVE_METER).Find(&petMale).Error; err != nil {
+		var users []domain.User
+		if err := j.db.Find(&users); err != nil {
 			return
 		}
+		for _, user := range users {
+			var petMale, petFemale domain.Pet
 
-		if err := j.db.Where("sex = ? and love_meter = ?", SEX_FEMALE, MAX_LOVE_METER).Find(&petFemale).Error; err != nil {
-			return
-		}
-
-		if petMale.Type == petFemale.Type && petMale.LoveMeter == MAX_LOVE_METER && petFemale.LoveMeter == MAX_LOVE_METER {
-			if err := j.db.Create(&domain.Pet{
-				Type:      petMale.Type,
-				Sex:       randomSex(),
-				Satiety:   100,
-				LoveMeter: 0,
-				Cost:      petMale.Cost,
-			}).Error; err != nil {
+			if err := j.db.Where("sex = ? and love_meter = ? and user_id = ?", SEX_MALE, MAX_LOVE_METER, user.ID).Find(&petMale).Error; err != nil {
 				return
 			}
 
-			petMale.LoveMeter = MIN_LOVE_METER
-			petFemale.LoveMeter = MIN_LOVE_METER
-
-			if err := j.db.Save(&petMale).Error; err != nil {
+			if err := j.db.Where("sex = ? and love_meter = ? and user_id = ?", SEX_FEMALE, MAX_LOVE_METER, user.ID).Find(&petFemale).Error; err != nil {
 				return
 			}
 
-			if err := j.db.Save(&petFemale).Error; err != nil {
-				return
+			if petMale.Type == petFemale.Type && petMale.LoveMeter == MAX_LOVE_METER && petFemale.LoveMeter == MAX_LOVE_METER {
+				child := domain.Pet{
+					Type:      petMale.Type,
+					Sex:       randomSex(),
+					Satiety:   100,
+					LoveMeter: 0,
+					Cost:      petMale.Cost,
+				}
+				if err := j.db.Create(&child).Error; err != nil {
+					return
+				}
+
+				petMale.LoveMeter = MIN_LOVE_METER
+				petFemale.LoveMeter = MIN_LOVE_METER
+
+				if err := j.db.Save(&petMale).Error; err != nil {
+					return
+				}
+
+				if err := j.db.Save(&petFemale).Error; err != nil {
+					return
+				}
+
+				j.broadcastStructToUserById(user.ID, domain.WebSocketMessage{
+					Event: "pet.love",
+					Data: webSocketLoveData{
+						Male:   petMale,
+						Female: petFemale,
+						Child:  child,
+					},
+				})
 			}
 		}
 	})
+}
+
+func (j *Job) broadcastStructToUserById(id uint, msg interface{}) {
+	rawM, err := json.Marshal(msg)
+	if err != nil {
+		logrus.Error(errors.Wrap(err, "failed to parse json for websocket"))
+		return
+	}
+	for _, ws := range j.wsConns[id] {
+		ws <- rawM
+	}
 }
 
 func randomSex() string {
