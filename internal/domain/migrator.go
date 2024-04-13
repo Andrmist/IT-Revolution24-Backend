@@ -7,7 +7,7 @@ import (
 )
 
 func MigrateDB(db *gorm.DB) error {
-	if err := db.AutoMigrate(&User{}, &Pet{}, &PetShop{}, &FoodShop{}); err != nil {
+	if err := db.AutoMigrate(&User{}, &Pet{}, &Food{}, &PetShop{}, &FoodShop{}); err != nil {
 		return err
 	}
 
@@ -60,6 +60,14 @@ func createFoodShop(db *gorm.DB) error {
 	}
 
 	if err := db.Create(&algae).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DropDB(db *gorm.DB) error {
+	if err := db.Migrator().DropTable(&PetShop{}, &FoodShop{}); err != nil {
 		return err
 	}
 

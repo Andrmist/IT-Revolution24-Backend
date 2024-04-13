@@ -18,6 +18,7 @@ type User struct {
 	IsRegistered bool           `gorm:"default:0" json:"isRegistered"`
 	Balance      float32        `grom:"default:0" json:"balance"`
 	Pets         []Pet          `json:"-"`
+	Food         []Food         `json:"-"`
 }
 
 type Pet struct {
@@ -30,14 +31,21 @@ type Pet struct {
 	UserID    uint    `json:"userId"`
 }
 
+type Food struct {
+	ID     uint    `gorm:"primaryKey" json:"id"`
+	Type   string  `json:"type"`
+	Cost   float32 `json:"cost"`
+	UserID uint    `json:"userId"`
+}
+
 type FoodShop struct {
-	ID   uint `gorm:"primaryKey"`
-	Type string
-	Cost float32
+	ID   uint    `gorm:"primaryKey" json:"id"`
+	Type string  `json:"type"`
+	Cost float32 `json:"cost"`
 }
 
 type PetShop struct {
-	ID   uint `gorm:"primaryKey"`
-	Type string
-	Cost float32
+	ID   uint    `gorm:"primaryKey" json:"id"`
+	Type string  `json:"type"`
+	Cost float32 `json:"cost"`
 }

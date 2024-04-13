@@ -11,17 +11,16 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type BuyPetRequest struct {
+type BuyFoodRequest struct {
 	Type string `json:"type" validate:"required"`
-	Sex  string `json:"sex" validate:"required"`
 }
 
-func ShopsBuyPet(w http.ResponseWriter, r *http.Request) {
+func ShopsBuyFood(w http.ResponseWriter, r *http.Request) {
 	serverCtx := r.Context().Value("server").(types.ServerContext)
 	user := r.Context().Value("user").(domain.User)
 
 	if user.Role == "children" {
-		var req BuyPetRequest
+		var req BuyFoodRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			domain.HTTPError(w, r, http.StatusBadRequest, errors.New("failed to decode body"))
@@ -34,7 +33,7 @@ func ShopsBuyPet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var shop domain.PetShop
+		var shop domain.FoodShop
 		if err := serverCtx.DB.Where("type = ?", req.Type).First(&shop).Error; err != nil {
 			domain.HTTPError(w, r, http.StatusBadRequest, errors.New("pet don't exist"))
 			return
@@ -52,16 +51,13 @@ func ShopsBuyPet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pet := domain.Pet{
-			Type:      req.Type,
-			Sex:       req.Sex,
-			Satiety:   100,
-			LoveMeter: 0,
-			Cost:      shop.Cost,
-			UserID:    user.ID,
+		food := domain.Food{
+			Type:   req.Type,
+			Cost:   shop.Cost,
+			UserID: user.ID,
 		}
 
-		if err := serverCtx.DB.Create(&pet).Error; err != nil {
+		if err := serverCtx.DB.Create(&food).Error; err != nil {
 			domain.HTTPError(w, r, http.StatusBadRequest, errors.New("failed to create pet"))
 			return
 		}
