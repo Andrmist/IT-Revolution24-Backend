@@ -20,8 +20,8 @@ type tokens struct {
 
 type RefreshTokenResponse struct {
 	types.Response
-	Tokens tokens
-	User   domain.User
+	Tokens tokens      `json:"tokens"`
+	User   domain.User `json:"user"`
 }
 
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
