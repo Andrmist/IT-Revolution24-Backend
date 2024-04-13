@@ -34,39 +34,6 @@ func main() {
 
 	db.AutoMigrate(&domain.User{}, &domain.Pet{})
 
-	db.Create(&domain.Pet{
-		Type:      "fish",
-		Sex:       "male",
-		Satiety:   100,
-		LoveMeter: 0,
-		Cost:      100,
-		UserID:    4,
-	})
-	db.Create(&domain.Pet{
-		Type:      "fish",
-		Sex:       "male",
-		Satiety:   100,
-		LoveMeter: 0,
-		Cost:      100,
-		UserID:    4,
-	})
-	db.Create(&domain.Pet{
-		Type:      "fish",
-		Sex:       "male",
-		Satiety:   100,
-		LoveMeter: 0,
-		Cost:      100,
-		UserID:    4,
-	})
-	db.Create(&domain.Pet{
-		Type:      "fish",
-		Sex:       "male",
-		Satiety:   100,
-		LoveMeter: 0,
-		Cost:      100,
-		UserID:    4,
-	})
-
 	serverCtx := types.ServerContext{
 		Config: config,
 		Log:    logger,
