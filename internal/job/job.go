@@ -25,9 +25,6 @@ const (
 	HUNGER_TIMEOUT = "@every 10s"
 	LOVE_TIMEOUT   = "@every 10s"
 	SEX_TIMEOUT    = "@every 5s"
-
-	SEX_MALE   = "male"
-	SEX_FEMALE = "female"
 )
 
 type Job struct {
@@ -131,17 +128,17 @@ func (j *Job) petJobs() {
 	j.c.AddFunc(SEX_TIMEOUT, func() {
 
 		var users []domain.User
-		if err := j.db.Find(&users); err != nil {
+		if err := j.db.Find(&users).Error; err != nil {
 			return
 		}
 		for _, user := range users {
 			var petMale, petFemale domain.Pet
 
-			if err := j.db.Where("sex = ? and love_meter = ? and user_id = ?", SEX_MALE, MAX_LOVE_METER, user.ID).Find(&petMale).Error; err != nil {
+			if err := j.db.Where("sex = ? and love_meter = ? and user_id = ?", types.SEX_MALE, MAX_LOVE_METER, user.ID).Find(&petMale).Error; err != nil {
 				return
 			}
 
-			if err := j.db.Where("sex = ? and love_meter = ? and user_id = ?", SEX_FEMALE, MAX_LOVE_METER, user.ID).Find(&petFemale).Error; err != nil {
+			if err := j.db.Where("sex = ? and love_meter = ? and user_id = ?", types.SEX_FEMALE, MAX_LOVE_METER, user.ID).Find(&petFemale).Error; err != nil {
 				return
 			}
 

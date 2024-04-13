@@ -2,15 +2,16 @@ package auth
 
 import (
 	"fmt"
-	"github.com/go-chi/render"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/pkg/errors"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-chi/render"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
 )
 
 type tokens struct {
@@ -20,8 +21,7 @@ type tokens struct {
 
 type RefreshTokenResponse struct {
 	types.Response
-	Tokens tokens      `json:"tokens"`
-	User   domain.User `json:"user"`
+	Tokens tokens
 }
 
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,6 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		res := RefreshTokenResponse{
-			User:   user,
 			Tokens: tokens,
 		}
 		render.JSON(w, r, res)

@@ -53,7 +53,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, RefreshTokenResponse{
 		Response: types.Response{},
 		Tokens:   tokens,
-		User:     user,
 	})
 
 }

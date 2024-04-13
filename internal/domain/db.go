@@ -39,3 +39,15 @@ type Message struct {
 	IsRead    bool      `gorm:"default:0" json:"isRead"`
 	UserID    uint      `json:"userId"`
 }
+
+type FoodShop struct {
+	ID   uint `gorm:"primaryKey"`
+	Type string
+	Cost float32
+}
+
+type PetShop struct {
+	ID   uint `gorm:"primaryKey"`
+	Type string
+	Cost float32
+}
