@@ -2,15 +2,16 @@ package auth
 
 import (
 	"fmt"
-	"github.com/go-chi/render"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/pkg/errors"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-chi/render"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
 )
 
 type tokens struct {

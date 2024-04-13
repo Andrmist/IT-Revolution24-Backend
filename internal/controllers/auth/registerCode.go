@@ -1,13 +1,14 @@
 package auth
 
 import (
+	"itrevolution-backend/internal/domain"
+	"itrevolution-backend/internal/types"
+	"net/http"
+
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"itrevolution-backend/internal/domain"
-	"itrevolution-backend/internal/types"
-	"net/http"
 )
 
 type registerCodeRequest struct {

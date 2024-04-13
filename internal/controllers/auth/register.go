@@ -2,16 +2,17 @@ package auth
 
 import (
 	"fmt"
-	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
-	gomail "gopkg.in/mail.v2"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
 	"math/rand"
 	"net/http"
 	"strconv"
+
+	"github.com/go-chi/render"
+	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
+	gomail "gopkg.in/mail.v2"
 )
 
 type registerRequest struct {
@@ -89,6 +90,32 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if err := server.DB.Save(&user).Error; err != nil {
 		domain.HTTPInternalServerError(w, r, err)
 		return
+	}
+
+	if user.Role == "children" {
+		if err := server.DB.Create(&domain.Pet{
+			Type:      types.TYPE_FISH,
+			Sex:       types.SEX_MALE,
+			Satiety:   100,
+			LoveMeter: 0,
+			Cost:      types.FISH_COST,
+			UserID:    user.ID,
+		}).Error; err != nil {
+			domain.HTTPInternalServerError(w, r, err)
+			return
+		}
+
+		if err := server.DB.Create(&domain.Pet{
+			Type:      types.TYPE_FISH,
+			Sex:       types.SEX_FEMALE,
+			Satiety:   100,
+			LoveMeter: 0,
+			Cost:      types.FISH_COST,
+			UserID:    user.ID,
+		}).Error; err != nil {
+			domain.HTTPInternalServerError(w, r, err)
+			return
+		}
 	}
 
 	responseTokens, err := generateTokens(user, server.Config)
