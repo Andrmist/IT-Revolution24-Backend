@@ -35,17 +35,18 @@ func main() {
 	db.AutoMigrate(&domain.User{}, &domain.Pet{})
 
 	serverCtx := types.ServerContext{
-		Config: config,
-		Log:    logger,
-		DB:     db,
+		Config:               config,
+		Log:                  logger,
+		DB:                   db,
+		WebSocketConnections: make(map[uint][]string),
 	}
 
 	internal.Run(ctx, serverCtx)
 
 	cr := cron.New()
-	job := job.NewJob(cr, db)
+	j := job.NewJob(cr, db)
 
-	go job.Run()
+	go j.Run()
 	defer cr.Stop()
 
 	logger.Info("Start...")
