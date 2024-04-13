@@ -32,7 +32,9 @@ func main() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Pet{})
+	if err := domain.MigrateDB(db); err != nil {
+		panic(err)
+	}
 
 	serverCtx := types.ServerContext{
 		Config: config,

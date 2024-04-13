@@ -2,6 +2,7 @@ package job
 
 import (
 	"itrevolution-backend/internal/domain"
+	"itrevolution-backend/internal/types"
 	"math/rand"
 
 	"github.com/robfig/cron"
@@ -18,9 +19,6 @@ const (
 	HUNGER_TIMEOUT = "@every 10s"
 	LOVE_TIMEOUT   = "@every 10s"
 	SEX_TIMEOUT    = "@every 5s"
-
-	SEX_MALE   = "male"
-	SEX_FEMALE = "female"
 )
 
 type Job struct {
@@ -89,13 +87,19 @@ func (j *Job) petJobs() {
 
 	// sex func
 	j.c.AddFunc(SEX_TIMEOUT, func() {
-		var petMale, petFemale domain.Pet
+		var pets []domain.Pet
 
-		if err := j.db.Where("sex = ? and love_meter = ?", SEX_MALE, MAX_LOVE_METER).Find(&petMale).Error; err != nil {
+		if err := j.db.Find(&pets).Error; err != nil {
 			return
 		}
 
-		if err := j.db.Where("sex = ? and love_meter = ?", SEX_FEMALE, MAX_LOVE_METER).Find(&petFemale).Error; err != nil {
+		var petMale, petFemale domain.Pet
+
+		if err := j.db.Where("sex = ? and love_meter = ?", types.SEX_MALE, MAX_LOVE_METER).Find(&petMale).Error; err != nil {
+			return
+		}
+
+		if err := j.db.Where("sex = ? and love_meter = ?", types.SEX_FEMALE, MAX_LOVE_METER).Find(&petFemale).Error; err != nil {
 			return
 		}
 
