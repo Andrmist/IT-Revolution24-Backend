@@ -22,7 +22,6 @@ type tokens struct {
 type RefreshTokenResponse struct {
 	types.Response
 	Tokens tokens
-	User   domain.User
 }
 
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +62,6 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		res := RefreshTokenResponse{
-			User:   user,
 			Tokens: tokens,
 		}
 		render.JSON(w, r, res)

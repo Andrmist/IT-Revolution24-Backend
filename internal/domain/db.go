@@ -29,3 +29,15 @@ type Pet struct {
 	Cost      float32 `json:"cost"`
 	UserID    uint    `json:"userId"`
 }
+
+type FoodShop struct {
+	ID   uint `gorm:"primaryKey"`
+	Type string
+	Cost float32
+}
+
+type PetShop struct {
+	ID   uint `gorm:"primaryKey"`
+	Type string
+	Cost float32
+}

@@ -53,6 +53,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	user.Name = req.Username
 	user.Email = req.Email
 	user.Role = req.Role
+	if user.Role == "children" {
+		user.Balance = types.STANDARD_BALACE
+	}
+
 	password, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
 	if err != nil {
 		domain.HTTPInternalServerError(w, r, err)
@@ -128,7 +132,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, RefreshTokenResponse{
 		Response: types.Response{},
 		Tokens:   responseTokens,
-		User:     user,
 	})
 
 }

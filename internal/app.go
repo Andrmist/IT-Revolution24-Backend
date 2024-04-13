@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"itrevolution-backend/internal/controllers/auth"
 	"itrevolution-backend/internal/controllers/pets"
+	"itrevolution-backend/internal/controllers/shops"
 	"itrevolution-backend/internal/controllers/users"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
@@ -56,6 +57,11 @@ func Run(ctx context.Context, serverCtx types.ServerContext) {
 		r.Post("/sell", roleGuard([]string{"*"}, pets.PetsSell))
 	})
 
+	r.Route("/api/shops", func(r chi.Router) {
+		r.Post("/buy", roleGuard([]string{"*"}, shops.ShopsBuyPet))
+		r.Post("/wall", roleGuard([]string{"*"}, shops.ShopsGenerateWallShop))
+	})
+
 	go func() {
 		serverCtx.Log.Info("Server is listening")
 		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%v", serverCtx.Config.Port), r); err != nil {
@@ -87,6 +93,7 @@ func roleGuard(roles []string, next http.HandlerFunc) http.HandlerFunc {
 			}
 			if !user.IsRegistered {
 				domain.HTTPError(w, r, http.StatusUnauthorized, errors.New("Your account is not activated. Check your email and try again."))
+				return
 			}
 			for _, role := range roles {
 				if role == "*" || role == user.Role {

@@ -54,6 +54,5 @@ func RegisterCode(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, RefreshTokenResponse{
 		Response: types.Response{},
 		Tokens:   responseTokens,
-		User:     user,
 	})
 }

@@ -13,4 +13,10 @@ const (
 	SEAHORSE_COST = 350
 
 	MAX_PETS = 20
+
+	STANDARD_BALACE = 100
+
+	TYPE_ALGAE = "algae"
+
+	ALGAE_COST = 50
 )
