@@ -3,6 +3,7 @@ package job
 import (
 	"encoding/json"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
 	"math/rand"
