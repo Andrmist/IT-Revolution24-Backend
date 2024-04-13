@@ -3,16 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/robfig/cron"
-	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"itrevolution-backend/internal"
 	"itrevolution-backend/internal/domain"
+	"itrevolution-backend/internal/job"
 	"itrevolution-backend/internal/types"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/robfig/cron"
+	"github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -30,8 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&domain.User{})
-	db.AutoMigrate(&domain.Fish{})
+	db.AutoMigrate(&domain.User{}, &domain.Pet{})
 
 	serverCtx := types.ServerContext{
 		Config: config,
@@ -42,17 +43,20 @@ func main() {
 	internal.Run(ctx, serverCtx)
 
 	cr := cron.New()
-	//go jobs.ServerPingJob(serverCtx)
-	cr.AddFunc("0 0-59/5 * * * *", func() {
-	})
-	cr.Start()
+	job := job.NewJob(cr, db)
+
+	go job.Run()
+	defer cr.Stop()
+
+	logger.Info("Start...")
 
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 
 	<-exit
+
 	logger.Info("Shutdown...")
+
 	cancel()
-	cr.Stop()
 	os.Exit(0)
 }

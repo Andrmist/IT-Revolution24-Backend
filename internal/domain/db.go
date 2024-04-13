@@ -19,7 +19,7 @@ type User struct {
 	Fishes       []Fish         `json:"-"`
 }
 
-type Fish struct {
+type Pet struct {
 	ID        uint    `gorm:"primaryKey" json:"id"`
 	Type      string  `json:"type"`
 	Sex       string  `json:"sex"`
