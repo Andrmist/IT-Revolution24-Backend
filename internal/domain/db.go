@@ -7,13 +7,16 @@ import (
 )
 
 type User struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt time.Time      `json:"createdAt,omitempty"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-	Name      string         `json:"name"`
-	Email     string         `json:"email" gorm:"uniqueIndex"`
-	Password  string         `json:"-"`
-	Role      string         `gorm:"default:user" json:"-"`
+	ID           uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt    time.Time      `json:"createdAt,omitempty"`
+	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	Name         string         `json:"name"`
+	Email        string         `json:"email" gorm:"uniqueIndex"`
+	Password     string         `json:"-"`
+	Role         string         `json:"-"`
+	AuthCode     int            `json:"-"`
+	IsRegistered bool           `gorm:"default:0" json:"isRegistered"`
+	Fishes       []Fish         `json:"-"`
 }
 
 type Pet struct {
@@ -23,4 +26,5 @@ type Pet struct {
 	Satiety   int     `json:"satiety"`
 	LoveMeter float32 `json:"loveMeter"`
 	Cost      float32 `json:"cost"`
+	UserID    uint    `json:"userId"`
 }

@@ -14,8 +14,11 @@ type Config struct {
 	PostgresUser     string `mapstructure:"POSTGRES_USER"`
 	PostgresPassword string `mapstructure:"POSTGRES_PASSWORD"`
 	PostgresDB       string `mapstructure:"POSTGRES_DB"`
-	TGToken          string `mapstructure:"TG_TOKEN"`
 	JWTSecret        string `mapstructure:"JWT_SECRET"`
+	SMTPHost         string `mapstructure:"SMTP_HOST"`
+	SMTPPort         string `mapstructure:"SMTP_PORT"`
+	SMTPUser         string `mapstructure:"SMTP_USER"`
+	SMTPPass         string `mapstructure:"SMTP_PASS"`
 }
 
 type ServerContext struct {
