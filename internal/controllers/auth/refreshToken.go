@@ -18,12 +18,10 @@ type tokens struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
-type refreshTokenResponse struct {
+type RefreshTokenResponse struct {
 	types.Response
 	Tokens tokens
-	User   struct {
-		Id uint `json:"id"`
-	} `json:"user"`
+	User   domain.User
 }
 
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
@@ -63,10 +61,8 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 			domain.HTTPInternalServerError(w, r, err)
 			return
 		}
-		res := refreshTokenResponse{
-			User: struct {
-				Id uint `json:"id"`
-			}(struct{ Id uint }{Id: user.ID}),
+		res := RefreshTokenResponse{
+			User:   user,
 			Tokens: tokens,
 		}
 		render.JSON(w, r, res)

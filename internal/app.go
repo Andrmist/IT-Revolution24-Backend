@@ -33,8 +33,8 @@ func Run(ctx context.Context, serverCtx types.ServerContext) {
 
 	r.Route("/api/auth", func(r chi.Router) {
 		r.Post("/refresh_token", auth.RefreshToken)
-		r.Post("/register", auth.RefreshToken)
-		r.Post("/login", auth.RefreshToken)
+		r.Post("/register", auth.Register)
+		r.Post("/login", auth.Login)
 	})
 
 	r.Route("/api/users", func(r chi.Router) {
@@ -44,6 +44,7 @@ func Run(ctx context.Context, serverCtx types.ServerContext) {
 	})
 
 	go func() {
+		serverCtx.Log.Info("Server is listening")
 		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%v", serverCtx.Config.Port), r); err != nil {
 			serverCtx.Log.Fatal(err)
 		}
