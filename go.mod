@@ -5,7 +5,6 @@ go 1.21.6
 require (
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/render v1.0.3
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron v1.2.0
