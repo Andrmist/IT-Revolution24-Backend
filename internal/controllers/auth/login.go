@@ -1,14 +1,15 @@
 package auth
 
 import (
+	"itrevolution-backend/internal/domain"
+	"itrevolution-backend/internal/types"
+	"net/http"
+
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"itrevolution-backend/internal/domain"
-	"itrevolution-backend/internal/types"
-	"net/http"
 )
 
 type loginRequest struct {
@@ -44,7 +45,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokens, err := generateTokens(user, server.Config)
-
 	if err != nil {
 		domain.HTTPInternalServerError(w, r, err)
 		return
