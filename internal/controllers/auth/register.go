@@ -85,7 +85,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	m.SetHeader("From", server.Config.SMTPUser)
 	m.SetHeader("To", user.Email)
 	m.SetHeader("Subject", fmt.Sprintf("Account %s verification", user.Name))
-	m.SetBody("text/plain", fmt.Sprintf("Hi! Please, confirm %s account creation with this code: %d", user.Role, user.AuthCode))
+	if req.Role == "parent" {
+		m.SetBody("text/plain", fmt.Sprintf("Hi! Please, confirm %s account creation with this code: %d", user.Role, user.AuthCode))
+	} else {
+		m.SetBody("text/plain", fmt.Sprintf("Hi! Please, confirm %s account creation with this link: https://localhost:3000/code/%d", user.Role, user.AuthCode))
+	}
 	if err := smtpD.DialAndSend(m); err != nil {
 		domain.HTTPInternalServerError(w, r, err)
 		return

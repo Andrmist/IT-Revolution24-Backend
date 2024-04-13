@@ -13,7 +13,7 @@ type User struct {
 	Name         string         `json:"name"`
 	Email        string         `json:"email"`
 	Password     string         `json:"-"`
-	Role         string         `json:"-"`
+	Role         string         `json:"role"`
 	AuthCode     int            `json:"-"`
 	IsRegistered bool           `gorm:"default:0" json:"isRegistered"`
 	Balance      float32        `grom:"default:0" json:"balance"`
