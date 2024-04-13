@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"itrevolution-backend/internal/domain"
+	"itrevolution-backend/internal/types"
 	"math/rand"
 
 	"github.com/robfig/cron"
@@ -76,18 +77,18 @@ func (j *Job) petJobs() {
 					return
 				}
 
-				j.broadcastStructToUserById(child.ID, domain.WebSocketMessage{
+				j.broadcastStructToUserById(child.ID, types.WebSocketMessage{
 					Event: "pet.death",
 					Data:  pet,
 				})
-				j.broadcastStructToUserById(parent.ID, domain.WebSocketMessage{
+				j.broadcastStructToUserById(parent.ID, types.WebSocketMessage{
 					Event: "pet.death",
 					Data:  pet,
 				})
 			}
 
 			if pet.Satiety <= HUNGRY_SATIETY {
-				j.broadcastStructToUserById(pet.UserID, domain.WebSocketMessage{
+				j.broadcastStructToUserById(pet.UserID, types.WebSocketMessage{
 					Event: "pet.hungry",
 					Data:  pet,
 				})
@@ -164,7 +165,7 @@ func (j *Job) petJobs() {
 					return
 				}
 
-				j.broadcastStructToUserById(user.ID, domain.WebSocketMessage{
+				j.broadcastStructToUserById(user.ID, types.WebSocketMessage{
 					Event: "pet.love",
 					Data: webSocketLoveData{
 						Male:   petMale,

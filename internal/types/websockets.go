@@ -1,4 +1,4 @@
-package domain
+package types
 
 type WebSocketMessage struct {
 	Event string      `json:"event"`
