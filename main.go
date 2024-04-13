@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"itrevolution-backend/internal"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/job"
@@ -32,13 +33,13 @@ func main() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Pet{})
+	db.AutoMigrate(&domain.User{}, &domain.Pet{}, &domain.Message{})
 
 	serverCtx := types.ServerContext{
 		Config:  config,
 		Log:     logger,
 		DB:      db,
-		WsConns: make(map[uint][]chan []byte),
+		WsConns: make(map[uint][]*websocket.Conn),
 	}
 
 	internal.Run(ctx, serverCtx)

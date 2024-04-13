@@ -2,11 +2,13 @@ package job
 
 import (
 	"encoding/json"
+	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
 	"math/rand"
+	"time"
 
 	"github.com/robfig/cron"
 	"gorm.io/gorm"
@@ -31,7 +33,7 @@ const (
 type Job struct {
 	c       *cron.Cron
 	db      *gorm.DB
-	wsConns map[uint][]chan []byte
+	wsConns map[uint][]*websocket.Conn
 }
 
 type webSocketLoveData struct {
@@ -40,7 +42,7 @@ type webSocketLoveData struct {
 	Child  domain.Pet `json:"child"`
 }
 
-func NewJob(c *cron.Cron, db *gorm.DB, wsConns map[uint][]chan []byte) *Job {
+func NewJob(c *cron.Cron, db *gorm.DB, wsConns map[uint][]*websocket.Conn) *Job {
 	return &Job{
 		c:       c,
 		db:      db,
@@ -186,7 +188,26 @@ func (j *Job) broadcastStructToUserById(id uint, msg interface{}) {
 		return
 	}
 	for _, ws := range j.wsConns[id] {
-		ws <- rawM
+		ws.WriteMessage(websocket.TextMessage, rawM)
+	}
+	if wsMsg, ok := msg.(types.WebSocketMessage); ok {
+		data, err := json.Marshal(wsMsg.Data)
+
+		if err != nil {
+			logrus.Error(errors.Wrap(err, "failed to parse json for websocket"))
+			return
+		}
+		dbMsg := domain.Message{
+			CreatedAt: time.Now(),
+			Event:     wsMsg.Event,
+			Data:      string(data),
+			IsRead:    false,
+			UserID:    id,
+		}
+		if err := j.db.Save(&dbMsg).Error; err != nil {
+			logrus.Error(errors.Wrap(err, "failed to save messages"))
+			return
+		}
 	}
 }
 
