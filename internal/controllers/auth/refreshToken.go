@@ -106,7 +106,7 @@ func generateTokens(user domain.User, config types.Config) (tokens, error) {
 	id := strconv.Itoa(int(user.ID))
 	accessTokenJWT := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": id,
-		"exp": time.Now().Add(5 * time.Minute).Unix(),
+		"exp": time.Now().Add(24 * 14 * time.Hour).Unix(),
 	})
 	refreshTokenJWT := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": id,
