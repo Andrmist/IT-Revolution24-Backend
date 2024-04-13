@@ -21,12 +21,6 @@ type registerRequest struct {
 	Role     string `json:"role" validate:"required"`
 }
 
-const emailFormat = `From: IT-Revolution24-Backend <%s>
-To: %s
-Subject: Account %s verification
-
-Hi! Please, confirm %s account creation with this Link: %d`
-
 func Register(w http.ResponseWriter, r *http.Request) {
 	server := r.Context().Value("server").(types.ServerContext)
 	var req registerRequest
