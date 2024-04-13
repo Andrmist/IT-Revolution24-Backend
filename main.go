@@ -33,6 +33,21 @@ func main() {
 		panic(err)
 	}
 
+	db.Create(&domain.Pet{
+		Type:      types.TYPE_FISH,
+		Sex:       types.SEX_MALE,
+		Satiety:   100,
+		LoveMeter: 0,
+		Cost:      types.FISH_COST,
+		UserID:    14,
+	})
+
+	db.Create(&domain.Food{
+		Type:   types.TYPE_ALGAE,
+		Cost:   types.ALGAE_COST,
+		UserID: 14,
+	})
+
 	if err := domain.MigrateDB(db); err != nil {
 		panic(err)
 	}
@@ -60,6 +75,10 @@ func main() {
 	<-exit
 
 	logger.Info("Shutdown...")
+
+	if err := domain.DropDB(db); err != nil {
+		panic(err)
+	}
 
 	cancel()
 	os.Exit(0)
