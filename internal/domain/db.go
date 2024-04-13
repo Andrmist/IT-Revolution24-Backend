@@ -14,6 +14,7 @@ type User struct {
 	Email     string         `json:"email" gorm:"uniqueIndex"`
 	Password  string         `json:"-"`
 	Role      string         `gorm:"default:user" json:"-"`
+	Fishes    []Fish         `json:"-"`
 }
 
 type Fish struct {
@@ -23,4 +24,5 @@ type Fish struct {
 	Satiety   int     `json:"satiety"`
 	LoveMeter float32 `json:"loveMeter"`
 	Cost      float32 `json:"cost"`
+	UserID    uint    `json:"userId"`
 }
