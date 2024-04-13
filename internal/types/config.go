@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -22,9 +23,10 @@ type Config struct {
 }
 
 type ServerContext struct {
-	Config Config
-	Log    *logrus.Logger
-	DB     *gorm.DB
+	Config  Config
+	Log     *logrus.Logger
+	DB      *gorm.DB
+	WsConns map[uint][]*websocket.Conn
 }
 
 func InitConfig() (Config, error) {
