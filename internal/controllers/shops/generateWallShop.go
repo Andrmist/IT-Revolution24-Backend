@@ -21,7 +21,7 @@ func ShopsGenerateWallShop(w http.ResponseWriter, r *http.Request) {
 
 	var response shopsWallResponse
 
-	if user.Role == "children" {
+	if user.Role == "child" {
 		if err := serverCtx.DB.Find(&response.Foods).Error; err != nil {
 			domain.HTTPInternalServerError(w, r, err)
 			return

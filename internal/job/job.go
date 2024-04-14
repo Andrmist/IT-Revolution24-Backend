@@ -2,6 +2,7 @@ package job
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -63,6 +64,11 @@ func (j *Job) petJobs() {
 		}
 
 		for _, pet := range pets {
+			j.broadcastStructToUserById(pet.UserID, types.WebSocketMessage{
+				Event: "pet.hungry",
+				Data:  pet,
+			})
+
 			if pet.Satiety <= 0 {
 				if err := j.db.Where("id = ?", pet.ID).Delete(&domain.Pet{}).Commit().Error; err != nil {
 					return
@@ -188,18 +194,27 @@ func (j *Job) broadcastStructToUserById(id uint, msg interface{}) {
 		ws.WriteMessage(websocket.TextMessage, rawM)
 	}
 	if wsMsg, ok := msg.(types.WebSocketMessage); ok {
-		data, err := json.Marshal(wsMsg.Data)
-
 		if err != nil {
 			logrus.Error(errors.Wrap(err, "failed to parse json for websocket"))
 			return
 		}
 		dbMsg := domain.Message{
 			CreatedAt: time.Now(),
-			Event:     wsMsg.Event,
-			Data:      string(data),
 			IsRead:    false,
 			UserID:    id,
+		}
+		switch wsMsg.Event {
+		case "pet.death":
+			data := wsMsg.Data.(domain.Pet)
+			dbMsg.Data = fmt.Sprintf("Pet #%d is dead!", data.ID)
+		case "pet.hungry":
+			data := wsMsg.Data.(domain.Pet)
+			dbMsg.Data = fmt.Sprintf("Pet #%d is hungry!", data.ID)
+		case "pet.love":
+			data := wsMsg.Data.(webSocketLoveData)
+			dbMsg.Data = fmt.Sprintf("Pet #%d loved #%d so much, that #%d was born!", data.Male.ID, data.Female.ID, data.Child.ID)
+		default:
+			return
 		}
 		if err := j.db.Save(&dbMsg).Error; err != nil {
 			logrus.Error(errors.Wrap(err, "failed to save messages"))

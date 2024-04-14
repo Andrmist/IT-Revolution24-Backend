@@ -20,7 +20,7 @@ func PetsFeed(w http.ResponseWriter, r *http.Request) {
 	server := r.Context().Value("server").(types.ServerContext)
 	user := r.Context().Value("user").(domain.User)
 
-	if user.Role == "children" {
+	if user.Role == "child" {
 		var req FeedPetRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			domain.HTTPError(w, r, http.StatusBadRequest, errors.New("failed to decode body"))

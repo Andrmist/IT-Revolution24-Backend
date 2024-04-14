@@ -53,7 +53,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	user.Name = req.Username
 	user.Email = req.Email
 	user.Role = req.Role
-	if user.Role == "children" {
+	if user.Role == "child" {
 		user.Balance = types.STANDARD_BALACE
 	}
 
@@ -100,7 +100,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Role == "children" {
+	if user.Role == "child" {
 		if err := server.DB.Create(&domain.Pet{
 			Type:      types.TYPE_FISH,
 			Sex:       types.SEX_MALE,

@@ -20,7 +20,7 @@ func ShopsBuyPet(w http.ResponseWriter, r *http.Request) {
 	serverCtx := r.Context().Value("server").(types.ServerContext)
 	user := r.Context().Value("user").(domain.User)
 
-	if user.Role == "children" {
+	if user.Role == "child" {
 		var req BuyPetRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

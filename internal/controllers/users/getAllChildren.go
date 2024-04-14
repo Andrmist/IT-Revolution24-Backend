@@ -17,7 +17,7 @@ type getAllChildrenResponse struct {
 	AlivePetsCount    int64 `json:"alivePetsCount"`
 	StarvingPetsCount int64 `json:"starvingPetsCount"`
 
-	Messages []string `json:"messages"`
+	Messages []domain.Message `json:"newMessages"`
 }
 
 func UsersGetChildren(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +25,7 @@ func UsersGetChildren(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(domain.User)
 
 	var childrens []domain.User
-	if err := serverCtx.DB.Where("email = ? and role = ?", user.Email, "children").Find(&childrens).Error; err != nil {
+	if err := serverCtx.DB.Preload("NewMessages", "is_read is not true").Where("email = ? and role = ?", user.Email, "child").Find(&childrens).Error; err != nil {
 		domain.HTTPInternalServerError(w, r, err)
 		return
 	}
@@ -54,7 +54,7 @@ func UsersGetChildren(w http.ResponseWriter, r *http.Request) {
 			AlivePetsCount:    alivePetsCount,
 			StarvingPetsCount: starvingPetsCount,
 
-			Messages: make([]string, 0),
+			Messages: children.NewMessages,
 		})
 	}
 

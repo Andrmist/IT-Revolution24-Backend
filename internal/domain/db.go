@@ -35,10 +35,9 @@ type Pet struct {
 type Message struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Event     string    `json:"event"`
 	Data      string    `json:"data"`
 	IsRead    bool      `gorm:"default:0" json:"isRead"`
-	UserID    uint      `json:"userId"`
+	UserID    uint      `json:"-"`
 }
 
 type Food struct {
