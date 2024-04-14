@@ -71,9 +71,9 @@ func Run(ctx context.Context, serverCtx types.ServerContext) {
 	})
 
 	r.Route("/api/shops", func(r chi.Router) {
-		r.Post("/buy/pet", roleGuard([]string{"*"}, shops.ShopsBuyPet))
-		r.Post("/buy/food", roleGuard([]string{"*"}, shops.ShopsBuyFood))
-		r.Get("/wall", roleGuard([]string{"*"}, shops.ShopsGenerateWallShop))
+		r.Post("/buy/pet", roleGuard([]string{"child"}, shops.ShopsBuyPet))
+		r.Post("/buy/food", roleGuard([]string{"child"}, shops.ShopsBuyFood))
+		r.Get("/wall", roleGuard([]string{"child"}, shops.ShopsGenerateWallShop))
 	})
 
 	r.Route("/api/messages", func(r chi.Router) {
