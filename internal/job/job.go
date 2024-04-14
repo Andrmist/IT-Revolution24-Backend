@@ -64,10 +64,10 @@ func (j *Job) petJobs() {
 		}
 
 		for _, pet := range pets {
-			//j.broadcastStructToUserById(pet.UserID, types.WebSocketMessage{
-			//	Event: "pet.hungry",
-			//	Data:  pet,
-			//})
+			j.broadcastStructToUserById(pet.UserID, types.WebSocketMessage{
+				Event: "pet.hungry",
+				Data:  pet,
+			})
 
 			if pet.Satiety <= 0 {
 				if err := j.db.Where("id = ?", pet.ID).Delete(&domain.Pet{}).Commit().Error; err != nil {
