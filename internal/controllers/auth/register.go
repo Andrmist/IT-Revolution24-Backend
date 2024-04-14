@@ -11,7 +11,6 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	gomail "gopkg.in/mail.v2"
 )
 
@@ -53,16 +52,17 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	user.Name = req.Username
 	user.Email = req.Email
 	user.Role = req.Role
+	user.Password = req.Password
 	if user.Role == "child" {
 		user.Balance = types.STANDARD_BALACE
 	}
 
-	password, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
-	if err != nil {
-		domain.HTTPInternalServerError(w, r, err)
-		return
-	}
-	user.Password = string(password)
+	//password, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
+	//if err != nil {
+	//	domain.HTTPInternalServerError(w, r, err)
+	//	return
+	//}
+	//user.Password = string(password)
 
 	for {
 		user.AuthCode = 10000 + rand.Intn(99999-10000)

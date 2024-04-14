@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -39,7 +38,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+	//if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+	//	domain.HTTPError(w, r, http.StatusBadRequest, errors.New("invalid username or password"))
+	//	return
+	//}
+	if user.Password != req.Password {
 		domain.HTTPError(w, r, http.StatusBadRequest, errors.New("invalid username or password"))
 		return
 	}

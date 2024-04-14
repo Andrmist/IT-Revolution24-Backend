@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"encoding/json"
+	"github.com/gorilla/websocket"
 	"itrevolution-backend/internal/domain"
 	"itrevolution-backend/internal/types"
 	"net/http"
@@ -42,6 +44,18 @@ func RegisterCode(w http.ResponseWriter, r *http.Request) {
 	if err := server.DB.Save(&user).Error; err != nil {
 		domain.HTTPInternalServerError(w, r, err)
 		return
+	}
+
+	if user.Role == "child" {
+		msg := types.WebSocketMessage{Event: "auth.code", Data: "ok"}
+		rawMsg, err := json.Marshal(msg)
+		if err != nil {
+			server.Log.Error(errors.Wrap(err, "failed to marshal websocket message"))
+		} else {
+			for _, ws := range server.WsConns[user.ID] {
+				ws.WriteMessage(websocket.TextMessage, rawMsg)
+			}
+		}
 	}
 
 	responseTokens, err := generateTokens(user, server.Config)
