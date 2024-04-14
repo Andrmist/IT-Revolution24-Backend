@@ -185,15 +185,21 @@ func (j *Job) petJobs() {
 }
 
 func (j *Job) broadcastStructToUserById(id uint, msg interface{}) {
-	rawM, err := json.Marshal(msg)
-	if err != nil {
-		logrus.Error(errors.Wrap(err, "failed to parse json for websocket"))
-		return
-	}
-	for _, ws := range j.wsConns[id] {
-		ws.WriteMessage(websocket.TextMessage, rawM)
-	}
 	if wsMsg, ok := msg.(types.WebSocketMessage); ok {
+		var pets []domain.Pet
+
+		inputData := wsMsg.Data
+		j.db.Find(&pets, "user_id = ?", id)
+		wsMsg.Data = pets
+
+		rawM, err := json.Marshal(wsMsg)
+		if err != nil {
+			logrus.Error(errors.Wrap(err, "failed to parse json for websocket"))
+			return
+		}
+		for _, ws := range j.wsConns[id] {
+			ws.WriteMessage(websocket.TextMessage, rawM)
+		}
 		if err != nil {
 			logrus.Error(errors.Wrap(err, "failed to parse json for websocket"))
 			return
@@ -205,13 +211,13 @@ func (j *Job) broadcastStructToUserById(id uint, msg interface{}) {
 		}
 		switch wsMsg.Event {
 		case "pet.death":
-			data := wsMsg.Data.(domain.Pet)
+			data := inputData.(domain.Pet)
 			dbMsg.Data = fmt.Sprintf("Pet #%d is dead!", data.ID)
 		case "pet.hungry":
-			data := wsMsg.Data.(domain.Pet)
+			data := inputData.(domain.Pet)
 			dbMsg.Data = fmt.Sprintf("Pet #%d is hungry!", data.ID)
 		case "pet.love":
-			data := wsMsg.Data.(webSocketLoveData)
+			data := inputData.(webSocketLoveData)
 			dbMsg.Data = fmt.Sprintf("Pet #%d loved #%d so much, that #%d was born!", data.Male.ID, data.Female.ID, data.Child.ID)
 		default:
 			return
