@@ -70,18 +70,22 @@ func (j *Job) petJobs() {
 			//})
 
 			if pet.Satiety <= 0 {
-				if err := j.db.Where("id = ?", pet.ID).Delete(&domain.Pet{}).Commit().Error; err != nil {
-					return
-				}
+				//fmt.Println("chlen")
+				j.db.Where("id = ?", pet.ID).Delete(&domain.Pet{}).Commit()
 
 				var child domain.User
 				if err := j.db.First(&child, "id = ?", pet.UserID).Error; err != nil {
+					fmt.Println(err)
 					return
 				}
 				var parent domain.User
 				if err := j.db.First(&parent, "email = ?", child.Email).Error; err != nil {
+					fmt.Println(err)
 					return
 				}
+
+				//fmt.Println(child)
+				//fmt.Println(parent)
 
 				j.broadcastStructToUserById(child.ID, types.WebSocketMessage{
 					Event: "pet.death",
