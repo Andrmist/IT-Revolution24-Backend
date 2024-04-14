@@ -23,8 +23,8 @@ const (
 	MIN_SATIETY    = 0
 	HUNGRY_SATIETY = 20
 
-	HUNGER_TIMEOUT = "@every 10s"
-	LOVE_TIMEOUT   = "@every 10s"
+	HUNGER_TIMEOUT = "@every 1m"
+	LOVE_TIMEOUT   = "@every 1m"
 	SEX_TIMEOUT    = "@every 5s"
 )
 
