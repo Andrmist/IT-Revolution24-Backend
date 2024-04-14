@@ -88,7 +88,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if req.Role == "parent" {
 		m.SetBody("text/plain", fmt.Sprintf("Hi! Please, confirm %s account creation with this code: %d", user.Role, user.AuthCode))
 	} else {
-		m.SetBody("text/plain", fmt.Sprintf("Hi! Please, confirm %s account creation with this link: https://localhost:3000/code/%d", user.Role, user.AuthCode))
+		m.SetBody("text/plain", fmt.Sprintf("Hi! Please, confirm %s account creation with this link: https://hackaton.dev.m0e.space/code/%d", user.Role, user.AuthCode))
 	}
 	if err := smtpD.DialAndSend(m); err != nil {
 		domain.HTTPInternalServerError(w, r, err)
