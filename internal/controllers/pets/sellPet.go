@@ -12,7 +12,8 @@ import (
 )
 
 type sellPetRequest struct {
-	PetId uint `json:"petId" validate:"required"`
+	//PetId uint `json:"petId" validate:"required"`
+	Type string `json:"type" validate:"required"`
 }
 
 func PetsSell(w http.ResponseWriter, r *http.Request) {
@@ -32,19 +33,19 @@ func PetsSell(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var pet domain.Pet
-	if err := server.DB.Where("id = ? and user_id = ?", req.PetId, user.ID).First(&pet).Error; err != nil {
+	if err := server.DB.Where("type = ? and user_id = ?", req.Type, user.ID).First(&pet).Error; err != nil {
 		domain.HTTPError(w, r, http.StatusBadRequest, errors.New("failed to sell pet"))
 		return
 	}
 
 	user.Balance = user.Balance + pet.Cost
 
-	server.DB.Where("id = ? and user_id = ?", req.PetId, user.ID).Delete(&pet).Commit()
+	server.DB.Where("id = ? and user_id = ?", pet.ID, user.ID).Delete(&pet).Commit()
 
 	if err := server.DB.Where("id = ?", user.ID).Save(&user).Error; err != nil {
 		domain.HTTPInternalServerError(w, r, err)
 		return
 	}
 
-	render.JSON(w, r, "sccessfully sold pet")
+	render.JSON(w, r, "successfully sold pet")
 }
