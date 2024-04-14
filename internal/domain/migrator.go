@@ -33,8 +33,8 @@ func createPetShop(db *gorm.DB) error {
 	}
 
 	snails := PetShop{
-		Type: types.TYPE_SNAILS,
-		Cost: types.SNAILS_COST,
+		Type: types.TYPE_SNAIL,
+		Cost: types.SNAIL_COST,
 	}
 
 	if err := db.Create(&snails).Error; err != nil {

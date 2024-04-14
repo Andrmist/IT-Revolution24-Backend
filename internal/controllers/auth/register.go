@@ -54,7 +54,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	user.Role = req.Role
 	user.Password = req.Password
 	if user.Role == "child" {
-		user.Balance = types.STANDARD_BALACE
+		user.Balance = types.STANDARD_BALANCE
 	}
 
 	//password, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
@@ -119,6 +119,54 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			Satiety:   100,
 			LoveMeter: 0,
 			Cost:      types.FISH_COST,
+			UserID:    user.ID,
+		}).Error; err != nil {
+			domain.HTTPInternalServerError(w, r, err)
+			return
+		}
+
+		if err := server.DB.Create(&domain.Pet{
+			Type:      types.TYPE_SNAIL,
+			Sex:       types.SEX_MALE,
+			Satiety:   100,
+			LoveMeter: 0,
+			Cost:      types.SNAIL_COST,
+			UserID:    user.ID,
+		}).Error; err != nil {
+			domain.HTTPInternalServerError(w, r, err)
+			return
+		}
+
+		if err := server.DB.Create(&domain.Pet{
+			Type:      types.TYPE_SNAIL,
+			Sex:       types.SEX_FEMALE,
+			Satiety:   100,
+			LoveMeter: 0,
+			Cost:      types.SNAIL_COST,
+			UserID:    user.ID,
+		}).Error; err != nil {
+			domain.HTTPInternalServerError(w, r, err)
+			return
+		}
+
+		if err := server.DB.Create(&domain.Pet{
+			Type:      types.TYPE_SHRIMP,
+			Sex:       types.SEX_MALE,
+			Satiety:   100,
+			LoveMeter: 0,
+			Cost:      types.SHRIMP_COST,
+			UserID:    user.ID,
+		}).Error; err != nil {
+			domain.HTTPInternalServerError(w, r, err)
+			return
+		}
+
+		if err := server.DB.Create(&domain.Pet{
+			Type:      types.TYPE_SHRIMP,
+			Sex:       types.SEX_FEMALE,
+			Satiety:   100,
+			LoveMeter: 0,
+			Cost:      types.SHRIMP_COST,
 			UserID:    user.ID,
 		}).Error; err != nil {
 			domain.HTTPInternalServerError(w, r, err)
